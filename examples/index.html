@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
+  </head>
+  <body ng-app="demo" ng-controller="FancyCtrl as fancy">
+    <div class="container" style="padding-top: 40px;">
+
+      <p>Try filtering the table</p>
+      <input ng-model="querystring" type="text">
+
+      <table fixed-head style="max-height:250px" class="table table-striped">
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Thing</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr ng-repeat="item in fancy.bag | filter:querystring">
+            <td style="width:40px">{{$index + 1}}</td>
+            <td>{{item.label}}</td>
+            <td>{{item.value}}</td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colspan="3">Total Fancy: {{fancy.total}}</td>
+          </tr>
+        </tfoot>
+
+      </table>
+
+    </div>
+    <script src="angular/angular.js" type="text/javascript" charset="utf-8"></script>
+    <script src="fixed-head.js" type="text/javascript" charset="utf-8"></script>
+    <script src="main.js" type="text/javascript" charset="utf-8"></script>
+  </body>
+</html>
