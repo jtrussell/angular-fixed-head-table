@@ -1,12 +1,13 @@
 {
   "name": "angular-fixed-header-table",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "authors": [
     "jtrussell"
   ],
-  "description": "Fixed thead and tfoot elements for angular tables",
+  "description": "Angular tables with fixed headers/footers and scrolling tbodys",
   "main": "dist/fixed-head.js",
   "keywords": [
+    "grid",
     "table",
     "angular"
   ],
@@ -16,7 +17,10 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "src",
+    "examples",
+    "karma.conf.js",
+    "package.json"
   ],
   "dependencies": {
     "angular": "~1.2.6"
