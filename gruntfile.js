@@ -61,6 +61,15 @@ module.exports = function(grunt) {
         singleRun: true,
         browsers: [process.env.KARMA_BROWSER || 'Firefox']
       }
+    },
+
+    bump: {
+      options: {
+        commitMessage: 'chore: Bump for release (v%VERSION%)',
+        files: ['package.json', 'bower.json'],
+        commitFiles: ['package.json', 'bower.json'],
+        push: false
+      }
     }
   });
 
