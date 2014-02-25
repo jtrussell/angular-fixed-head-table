@@ -1,6 +1,6 @@
 {
   "name": "angular-fixed-head-table",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Angular tables with fixed headers/footers and scrolling tbodys",
   "main": "gruntfile.js",
   "private": true,
