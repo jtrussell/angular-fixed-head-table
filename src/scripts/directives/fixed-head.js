@@ -26,9 +26,6 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
       var freezeCellSize = function(cell) {
         var width = cell.offsetWidth + 'px';
         cell.style.width = width;
-
-        var height = cell.offsetHeight + 'px';
-        cell.style.height = height;
       };
 
       var layout = null;
@@ -43,7 +40,6 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
       var getLayout = function() {
         if(layout) { return layout; }
         var thead = element.find('thead')
-          , tbody = element.find('tbody')
           , tfoot = element.find('tfoot');
 
         layout = {
@@ -54,13 +50,6 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
           thead: {
             height: thead[0] ? thead[0].offsetHeight : 0
           },
-          tbody: {
-            firstRow: {
-              colWidths: map(tbody.find('tr')[0].children, function(td) {
-                return td.offsetWidth;
-              })
-            }
-          },
           tfoot: {
             height: tfoot[0] ? tfoot[0].offsetHeight : 0
           }
@@ -69,18 +58,54 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
         return layout;
       };
 
+      var layoutFirstRow = null;
+
+      /**
+       * Get layout info for the first row
+       *
+       * Info is a cached for subsequent calls
+       *
+       * @return {Object} The layout information
+       */
+      var getLayoutFirstRow = function() {
+        if(layoutFirstRow) { return layoutFirstRow; }
+
+        var firstRow = element.find('tbody').find('tr')[0];
+        if(!firstRow) {
+          return null;
+        }
+
+        layoutFirstRow = {
+          colWidths: map(firstRow.children, function(td) {
+            return td.offsetWidth;
+          })
+        };
+
+        return layoutFirstRow;
+      };
+
       /**
        * Locks widths of the first row cells
        *
        * This keeps tbody from collapsing.
+       *
+       * @return {Boolean} Whether or not we could set row layout
        */
       var doLayoutFirstRow = function() {
         var tbody = element.find('tbody')
           , firstRow = ng.element(tbody.find('tr')[0]).children()
-          , layout = getLayout();
+          , layout = getLayoutFirstRow();
+
+        // There may not be no rows (yet?)
+        if(!layout) {
+          return false;
+        }
+
         angular.forEach(firstRow, function(cell, ix) {
-          ng.element(cell).css('width', layout.tbody.firstRow.colWidths[ix] + 'px');
+          ng.element(cell).css('width', layout.colWidths[ix] + 'px');
         });
+
+        return true;
       };
 
       /**
@@ -99,7 +124,6 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
 
         angular.forEach(colHeaders, freezeCellSize);
         angular.forEach(colFooters, freezeCellSize);
-        doLayoutFirstRow();
 
         // Need position to make things sing
         element.css('position', 'relative');
@@ -123,10 +147,11 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
 
         if(layout.table.maxHeight) {
           tbody.css('maxHeight', (layout.table.maxHeight - theadHeight - tfootHeight) + 'px');
-          tbody.css('overflow', 'scroll');
         } else {
           tbody.css('height', (layout.table.height - theadHeight - tfootHeight) + 'px');
-          tbody.css('overflow', 'scroll');
+        }
+        if('visible' === tbody.css('overflow') || '' === tbody.css('overflow')) {
+          tbody.css('overflow', 'auto');
         }
 
       };
@@ -138,7 +163,9 @@ angular.module('fixedHeadTable').directive('fixedHead', ['$timeout', function($t
        * use a timeout to let the current execution stack run its course before
        * we try to figure out widths and heighst.
        */
+
       $timeout(function() {
+        doLayoutFirstRow();
         doLayout();
 
         scope.$watch(function() {
